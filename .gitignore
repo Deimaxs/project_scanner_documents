@@ -1,7 +1,5 @@
 /venv
 *.txt
-*.jpeg
-*.jpg
 /test
 /python-bigquery
 /__pycache__
