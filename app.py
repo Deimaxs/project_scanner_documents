@@ -1,4 +1,4 @@
 from utils import Imagen, Window
 
-image=Imagen()
-window = Window(image)
+image = Imagen()
+window = Window(image) 

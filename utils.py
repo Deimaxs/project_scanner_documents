@@ -14,6 +14,7 @@ from itertools import zip_longest
 from google.oauth2 import service_account
 import pandas_gbq
 
+import numpy as np
 
 #Objeto usado para la conexión con BigQuery
 bq_credentials=service_account.Credentials.from_service_account_file('python-bigquery/quiet-maxim-367218-64eeb5f73b71.json')
@@ -31,6 +32,16 @@ def position_search(target ,text):
         if i[1].startswith(target):
             break
     return i[0]
+
+def ordenar_puntos(puntos):
+	n_puntos = np.concatenate([puntos[0], puntos[1], puntos[2], puntos[3]]).tolist()
+	y_order = sorted(n_puntos, key=lambda n_puntos: n_puntos[1])
+	x1_order = y_order[:2]
+	x1_order = sorted(x1_order, key=lambda x1_order: x1_order[0])
+	x2_order = y_order[2:4]
+	x2_order = sorted(x2_order, key=lambda x2_order: x2_order[0])
+	return [x1_order[0], x1_order[1], x2_order[0], x2_order[1]]
+
 
 #Clase donde se buscan, almacenan y envian los datos
 class Datos:
@@ -68,7 +79,7 @@ class Datos:
             costo.append(i.split(" ")[::-1][0])
             
         self.data=[fecha, orden, cliente, sub_total, iva, envio, otro, total, articulo, producto, cantidad, precio, costo]
-
+        
     def send(self):
         opt = messagebox.askquestion("Enviar data", "¿Desea enviar la data a la base de datos?") 
 
@@ -108,10 +119,26 @@ class Datos:
 
 #Clase que almacena y muestra la imagen seleccionada
 class Imagen:
-    image=None
+    image=None        
 
     def show_image(self, path_image):
-        self.image =cv2.imread(path_image)
+        self.image = cv2.imread(path_image)
+        area = (self.image.shape[0]*self.image.shape[1])
+        gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        canny = cv2.Canny(gray, 10, 150)
+        canny = cv2.dilate(canny, None, iterations=1)
+        cnts = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+        cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:1]
+        for c in cnts:
+            epsilon = 0.01*cv2.arcLength(c,True)
+            approx = cv2.approxPolyDP(c,epsilon,True)
+            if (cv2.contourArea(approx)/area) > 0.2:
+                if len(approx)==4:
+                    puntos = ordenar_puntos(approx)
+                    pts1 = np.float32(puntos)
+                    pts2 = np.float32([[0,0],[540,0],[0,620],[540,620]])
+                    M = cv2.getPerspectiveTransform(pts1,pts2)
+                    self.image = cv2.warpPerspective(gray,M,(540,620))
         imageToShow=imutils.resize(self.image, width=450)
         imageToShow=cv2.cvtColor(imageToShow, cv2.COLOR_BGR2RGB)
         im=Image.fromarray(imageToShow)
@@ -121,7 +148,8 @@ class Imagen:
 #Clase que genera la ventana con sus labels y buttons, agregando la funcionalidad de abrir la imagen y 
 # ejecutar los metodos de las clases Datos e Image
 class Window():
-    def __init__(self, image) -> None:
+
+    def __init__(self, image):
         self.image=image
         self.root=Tk()
         self.root.configure(width=680, height=900)
@@ -129,26 +157,25 @@ class Window():
         self.label_image = Label(self.root)
         self.label_image.grid(column=1, row=0, rowspan=21)
         
-        self.but_select = Button(self.root, text="Elegir imagen", font=(10), width=25, padx=5, pady=5, command=self.open_file)
+        self.but_select = Button(self.root, text="Elegir imagen", font=(10), background="black", fg="white", width=25, padx=5, pady=5, command=self.open_file)
         self.but_select.grid(column=0, row=0, padx=5, pady=5)
 
         self.root.mainloop()
 
     def open_file(self):
         self.root.configure(width=680, height=900)
-        path_image = filedialog.askopenfilename(filetypes = [('image files', ['*.jpg', ' *.jpeg', ' *.png'])])
+        path_image = filedialog.askopenfilename(filetypes = [('image files', ['*.jpg', ' *.jpeg', ' *.png'])]) 
         if len(path_image) > 0:
             self.image.show_image(path_image)
-
+            
             self.label_image.configure(image=self.image.img, height=670, width=700)
             self.label_image.image=self.image.img
 
             datos = Datos()
             datos.retriever(path_image)
 
-            Button(self.root, text="Enviar data", font=(10), width=20, padx=5, pady=5, background="black", fg="white", command=datos.send).grid(column=0, row=16)
+            Button(self.root, text="Enviar data", font=(10), width=25, padx=5, pady=5, background="black", fg="white", command=datos.send).grid(column=0, row=16)
             Label(text=("FECHA:     " + datos.data[0]), font=(9)).grid(column=0, row=18)
             Label(text=("ORDEN:     " + datos.data[1]), background="gray", fg="white", font=(9)).grid(column=0, row=17)
             Label(text=("CLIENTE:   " + datos.data[2]), font=(9)).grid(column=0, row=19)
             Label(text=("TOTAL:     " + datos.data[7]), font=(9)).grid(column=0, row=20)
-        
