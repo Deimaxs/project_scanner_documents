@@ -21,11 +21,11 @@ El objetivo del proyecto es realizar un dashboard que recopila la información d
 
 * Base de datos:
 
-![Image base](example\image1.JPG?raw=true)
+![Image base](example/image1.JPG?raw=true)
 
 * Dashboard:
 
-![Image base](example\image2.JPG?raw=true)
+![Image base](example/image2.JPG?raw=true)
 
 
 Este script hace uso de herramientas como google BigQuery (GBQ), pyteseract y Looker Studio (Antes conocido como google data studio), ademas de librerías y frameworks tales como tkinter, openCV, pandas_gbq, entre otras.
@@ -35,9 +35,9 @@ Este script hace uso de herramientas como google BigQuery (GBQ), pyteseract y Lo
 
 * Ejecutar el archivo app.py y utilizar la interfaz para seleccionar la imagen, una vez realizada esta labor la aplicacion reconocera los datos en ella y realizamos el envio de la informacion a la base de datos.
 
-![Image desktop](example\image.jpeg?raw=true)
+![Image desktop](example/image.jpeg?raw=true)
 
-![Image desktop](example\image3.jpg?raw=true)
+![Image desktop](example/image3.jpg?raw=true)
 
 ## Observaciones
 
@@ -56,7 +56,7 @@ Este script hace uso de herramientas como google BigQuery (GBQ), pyteseract y Lo
 Email: mateo.sanchezalzate@gmail.com
 
 Portfolio: 
-[...](https://www.linkedin.com/in/mateo-sanchez-770019256/ "...")
+[Página Web](https://deimaxs.github.io/ "Página Web")
 
 LinkedIn: 
-[Mateo Sánchez](https://www.linkedin.com/in/mateo-sanchez-770019256/ "Mateo Sánchez")
+[Mateo Sánchez](https://www.linkedin.com/in/mateo-sanchez-ds/ "Mateo Sánchez")
