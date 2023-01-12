@@ -16,7 +16,7 @@
 
 ## Introducción
 
-El objetivo del proyecto es realizar un dashboard que recopila la información de una base de datos en Google BigQuery. El usuario selecciona las fotografías de las facturas de compra por medio de la GUI, la cual realiza el recocnocimiento y los comunica por medio de la API de google a BigQuery. 
+El objetivo del proyecto es realizar un dashboard que recopila la información de una base de datos en Google BigQuery. El usuario selecciona las fotografías de las facturas de compra por medio de la GUI, la cual realiza el reconocimiento y los comunica por medio de la API de google a BigQuery. 
 
 
 * Base de datos:
